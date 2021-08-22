@@ -1,20 +1,21 @@
 package org.mooon.biz;
 
-import org.apache.poi.sl.usermodel.VerticalAlignment;
 import org.apache.poi.xwpf.usermodel.*;
 import org.mooon.util.StringUtil;
 import org.mooon.util.WeekDayUtil;
 
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.List;
+import java.util.Date;
 import java.util.Map;
 
-public class DinnerRuWeiService {
+/**
+ * 午餐卤味导出
+ */
+public final class DinnerRuWeiService {
 
     public DinnerRuWeiService() {}
 
-    public void export(String filePath, String title, Map<String, Map<Integer, MealMenu>> menuMap, int ruWeiPro) {
+    public void export(String filePath, String title, Map<Date, Map<Integer, MealMenu>> menuMap, int ruWeiPro) {
         XWPFDocument doc = new XWPFDocument();
         // 写入文件
         try (doc; FileOutputStream fos = new FileOutputStream(filePath)) {
@@ -26,7 +27,7 @@ public class DinnerRuWeiService {
         }
     }
 
-    public void createDocReport1(XWPFDocument doc, String title, Map<String, Map<Integer, MealMenu>> menuMap, int ruWeiPro) {
+    public void createDocReport1(XWPFDocument doc, String title, Map<Date, Map<Integer, MealMenu>> menuMap, int ruWeiPro) {
         // 创建标题
         XWPFParagraph titleParagraph = doc.createParagraph();
         titleParagraph.setAlignment(ParagraphAlignment.CENTER);
@@ -50,7 +51,7 @@ public class DinnerRuWeiService {
         table.setWidthType(TableWidthType.DXA);
         table.setWidth(8000);
         int startRow = 0;
-        for (String s : menuMap.keySet()) {
+        for (Date s : menuMap.keySet()) {
             // 创建日期
             XWPFTableRow row = table.getRow(startRow);
             row.setHeight(1500);

@@ -91,18 +91,26 @@ public class ExportReports {
             throw new InvalidParameterException(String.format("该sheet:{%s}不存在", importSetting.sheetName));
         }
 
-        // 晚餐预订单
+        // 晚餐菜单
         DinnerService dinnerService = new DinnerService(importSetting, exportSetting);
-        Map<String, Map<Integer, MealMenu>> menus = dinnerService.getMealMenu(sheet, cateMap);
+        Map<Date, Map<Integer, MealMenu>> menus = dinnerService.getMealMenu(sheet, cateMap);
         dinnerService.import2MealMenuOfReport1(menus, path + "/" + exportSetting.fileName);
 
         // 卤味预订单
-        DinnerRuWeiService ruWeiService = new DinnerRuWeiService();
         Date startDay = ExcelHelper.parseDate(importSetting.dayStartAt);
         Date endDay = ExcelHelper.addDay(startDay, menus.size() - 1);
-        String fileName = String.format("1.卤味预订单(%s-%s).docx", ExcelHelper.formatDateOfTile(startDay), ExcelHelper.formatDateOfTile(endDay));
-        String title = String.format("%s-%s", ExcelHelper.formatDateOfTile(startDay), ExcelHelper.formatDateOfTile(endDay));
+        String dateOfSheet = String.format("%s-%s", ExcelHelper.formatDateOfSheet(startDay), ExcelHelper.formatDateOfSheet(endDay));
+        String dateOfTitle = String.format("%s-%s", ExcelHelper.formatDateOfTile(startDay), ExcelHelper.formatDateOfTile(endDay));
+
+        DinnerRuWeiService ruWeiService = new DinnerRuWeiService();
+        String fileName = String.format("1.卤味预订单(%s).docx", dateOfSheet);
+        String title = dateOfTitle;
         ruWeiService.export(path + "/" + fileName, title, menus, ruWeiPro);
+
+        // 晚餐预订单
+        String fileNameOf3 = String.format("3.晚餐预订单(%s).xlsx", dateOfSheet);
+        DinnerOrdersService ordersService = new DinnerOrdersService(path, "/" + fileNameOf3);
+        ordersService.exportReport1(menus);
     }
 
 }
