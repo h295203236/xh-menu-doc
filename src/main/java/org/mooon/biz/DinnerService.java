@@ -2,6 +2,7 @@ package org.mooon.biz;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.mooon.ExportSetting;
 import org.mooon.ImportSetting;
@@ -25,7 +26,7 @@ public class DinnerService {
         this.exportSetting = exportSetting;
     }
 
-    public Map<String, Map<Integer, MealMenu>> getMealMenu(Sheet sheet, Map<String, Triple3<Integer, Integer, Integer>> cateMap) throws ParseException {
+    public Map<Date, Map<Integer, MealMenu>> getMealMenu(Sheet sheet, Map<String, Triple3<Integer, Integer, Integer>> cateMap) throws ParseException {
         // 解析每日菜单日期
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_FORMAT);
         Date startDay = simpleDateFormat.parse(importSetting.dayStartAt);
@@ -51,9 +52,9 @@ public class DinnerService {
         }
 
         // 获取每日详细菜单
-        Map<String, Map<Integer, MealMenu>> menusMap = new LinkedHashMap<>();
+        Map<Date, Map<Integer, MealMenu>> menusMap = new LinkedHashMap<>();
         for (DayMenuContext context : contexts) {
-            Map<Integer, MealMenu> menuMap = menusMap.computeIfAbsent(context.day, s -> new LinkedHashMap<>());
+            Map<Integer, MealMenu> menuMap = menusMap.computeIfAbsent(context.dayOfDate, s -> new LinkedHashMap<>());
             for (int i = importSetting.menuStartRow - 1; i < importSetting.menuEndRow; i++) {
                 Tuple2<String, Integer> tuple2 = getCate(i, cateMap);
                 Row rowI = sheet.getRow(i);
@@ -74,7 +75,9 @@ public class DinnerService {
         return menusMap;
     }
 
-    public void import2MealMenuOfReport1(Map<String, Map<Integer, MealMenu>> menus, String filePath) throws IOException {
+    public void import2MealMenuOfReport1(Map<Date, Map<Integer, MealMenu>> menus, String filePath) throws IOException {
+        System.out.println("staring export " + filePath);
+
         SimpleDateFormat dfOfSheet = new SimpleDateFormat(DATE_FORMAT_OF_SHEET);
         Workbook workbook = new XSSFWorkbook();
         for (Map<Integer, MealMenu> menuMap : menus.values()) {
@@ -84,6 +87,15 @@ public class DinnerService {
                 break;
             }
             Sheet sheet = workbook.createSheet(dfOfSheet.format(menu.getForDayOfDate()));
+            sheet.getPrintSetup().setPaperSize(PrintSetup.A4_PAPERSIZE);
+            sheet.getPrintSetup().setHeaderMargin(0.75);
+            sheet.getPrintSetup().setFooterMargin(0.75);
+            sheet.setMargin(XSSFSheet.TopMargin, sheet.getMargin(XSSFSheet.TopMargin));
+            sheet.setMargin(XSSFSheet.BottomMargin, sheet.getMargin(XSSFSheet.BottomMargin));
+            sheet.setMargin(XSSFSheet.LeftMargin, 0.25);
+            sheet.setMargin(XSSFSheet.RightMargin, 0.25);
+            sheet.setHorizontallyCenter(true);
+
             // 创建标题
             createTitle(workbook, sheet, menu);
             // 创建菜单
@@ -134,7 +146,16 @@ public class DinnerService {
         // 合并单元格
         CellRangeAddress region = new CellRangeAddress(0, 0, 0, exportSetting.menuDataCellMax);
         sheet.addMergedRegion(region);
-        cellTitle.setCellStyle(style);
+        int firstRow = region.getFirstRow();
+        int lastRow = region.getLastRow();
+        int firstCell = region.getFirstColumn();
+        int lastCell = region.getLastColumn();
+        for (int i = firstRow; i <= lastRow; i++) {
+            for (int j = firstCell; j <= lastCell; j++) {
+                Cell cell = sheet.getRow(i).createCell(j);
+                cell.setCellStyle(style);
+            }
+        }
         cellTitle.setCellValue(title);
     }
 
