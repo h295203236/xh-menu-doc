@@ -1,6 +1,5 @@
 package org.mooon;
 
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -75,9 +74,10 @@ public class ExportReports {
         exportDinnerReport1(workbook, path, filenameOfDinner, importSettingOfDinner, cateMap, lu);
 
         // 分开菜单报告导出
+        // menuStartRow-3: 晚餐起始行号，用于中晚餐拆分报告
         String filenameOfSplitMenu = String.format("5.中晚餐分开菜单(%s).xlsx", dateOfSheet);
         exportSplitMenuReport1(path, sourceExcelFileName, sheetName, filenameOfSplitMenu,
-                importSettingOfDinner.menuStartRow);
+                importSettingOfDinner.menuStartRow - 3);
 
         workbook.close();
     }
@@ -113,10 +113,10 @@ public class ExportReports {
     }
 
     protected static void exportDinnerReport1(Workbook workbook, String path,
-                                           String filenameOfDinner,
-                                           ImportSetting importSetting,
-                                           Map<String, Triple3<Integer, Integer, Integer>> cateMap,
-                                           int lu) throws ParseException, IOException {
+                                              String filenameOfDinner,
+                                              ImportSetting importSetting,
+                                              Map<String, Triple3<Integer, Integer, Integer>> cateMap,
+                                              int lu) throws ParseException, IOException {
         //Map<String, Triple3<Integer, Integer, Integer>> cateMap = new HashMap<>();
         //int ruWeiPro = 1;
         //cateMap.put("档口", new Triple3<>(25, 29, 2));
