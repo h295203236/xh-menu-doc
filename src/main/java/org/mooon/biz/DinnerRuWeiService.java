@@ -16,6 +16,8 @@ public final class DinnerRuWeiService {
     public DinnerRuWeiService() {}
 
     public void export(String filePath, String title, Map<Date, Map<Integer, MealMenu>> menuMap, int ruWeiPro) {
+        System.out.println("staring export " + filePath);
+
         XWPFDocument doc = new XWPFDocument();
         // 写入文件
         try (doc; FileOutputStream fos = new FileOutputStream(filePath)) {
