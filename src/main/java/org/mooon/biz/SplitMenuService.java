@@ -5,6 +5,7 @@ import org.apache.poi.ss.usermodel.PrintSetup;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -33,7 +34,7 @@ public final class SplitMenuService {
         this.fileName = fileName;
     }
 
-    public void exportReport1(int dinnerStart) {
+    public void exportReport1(int lunchEndAt, int dinnerStart) {
         System.out.println("staring export " + fileName);
         try (InputStream is = new FileInputStream(path + "/" + sourceFileName);
              Workbook workbook = new XSSFWorkbook(is)) {
@@ -54,10 +55,12 @@ public final class SplitMenuService {
 
             Sheet lunchSheet = workbook.cloneSheet(at);
             workbook.setSheetName(workbook.getSheetIndex(lunchSheet.getSheetName()), "午餐");
-            //removeRegions(lunchSheet, dinnerStart-1, lunchSheet.getLastRowNum());
-            for (int i = lunchSheet.getLastRowNum(); i > dinnerStart - 1; i--) {
-                removeRow(lunchSheet, dinnerStart - 1);
+            for (int i = lunchSheet.getLastRowNum(); i > lunchEndAt; i--) {
+                removeRow(lunchSheet, lunchEndAt+1);
             }
+            // 设置滚动到第一行，聚焦第一列
+            lunchSheet.setActiveCell(new CellAddress("A1"));
+            //lunchSheet.createFreezePane(0, lunchSheet.getLastRowNum());
 
             Sheet dinnerSheet = workbook.cloneSheet(at);
             workbook.setSheetName(workbook.getSheetIndex(dinnerSheet.getSheetName()), "晚餐");
@@ -67,6 +70,9 @@ public final class SplitMenuService {
             }
             int lastCellNum = dinnerSheet.getRow(1).getLastCellNum();
             dinnerSheet.addMergedRegion(new CellRangeAddress(0, 0, 0, lastCellNum - 1));
+            // 设置滚动到第一行，聚焦第一列
+            dinnerSheet.setActiveCell(new CellAddress("A1"));
+            //dinnerSheet.createFreezePane(0, dinnerSheet.getLastRowNum());
 
             // 打印设置
             printSetUp(lunchSheet);

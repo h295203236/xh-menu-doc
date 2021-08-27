@@ -78,7 +78,7 @@ public class ExportReports {
         // menuStartRow-3: 晚餐起始行号，用于中晚餐拆分报告
         String filenameOfSplitMenu = String.format("5.中晚餐分开菜单(%s).xlsx", dateOfSheet);
         exportSplitMenuReport1(path, sourceExcelFileName, sheetName, filenameOfSplitMenu,
-                importSettingOfDinner.menuStartRow - 3);
+                importSettingOfLunch.menuEndRow, importSettingOfDinner.menuStartRow - 3);
 
         workbook.close();
     }
@@ -174,8 +174,9 @@ public class ExportReports {
                                                  String sourceFileName,
                                                  String sourceSheet,
                                                  String fileName,
+                                                 int lunchEndAt,
                                                  int dinnerStartAt) {
         SplitMenuService splitMenuService = new SplitMenuService(path, sourceFileName, sourceSheet, fileName);
-        splitMenuService.exportReport1(dinnerStartAt);
+        splitMenuService.exportReport1(lunchEndAt, dinnerStartAt);
     }
 }
