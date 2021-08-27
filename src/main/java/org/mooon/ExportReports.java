@@ -19,10 +19,10 @@ public class ExportReports {
     public static void main(String[] args) throws ParseException, IOException {
 
         String path = "/Users/mooon/Documents/私人/临时/火星13";
-        String sourceExcelFileName = "省店8.23-8.27早、中餐菜单.xlsx";
-        String sheetName = "省店中晚菜单"; // 菜单所在sheet名称
-        String dayStartAt = "2021-08-23";   // 起始菜单日期
-        String dayEndAt = "2021-08-27";   // 起始菜单日期
+        String sourceExcelFileName = "省店8.30-9.3早、中晚餐菜单.xlsx";
+        String sheetName = "省店中晚餐菜单"; // 菜单所在sheet名称
+        String dayStartAt = "2021-08-30";   // 起始菜单日期
+        String dayEndAt = "2021-09-03";   // 起始菜单日期
         exportAllReports(path, sourceExcelFileName, sheetName, dayStartAt, dayEndAt);
     }
 
@@ -35,7 +35,7 @@ public class ExportReports {
         importSettingOfLunch.dayStartAt = dayStartAt;   // 起始菜单日期
         importSettingOfLunch.dayAtRow = 3;                // 日期所在行号
         importSettingOfLunch.menuStartRow = 5;            // 菜单开始行号
-        importSettingOfLunch.menuEndRow = 20;             // 菜单结束行号
+        importSettingOfLunch.menuEndRow = 21;             // 菜单结束行号
         importSettingOfLunch.dayStartCell = 'B';          // 日期起始列名
         importSettingOfLunch.dayEndCell = 'K';            // 日期截止列名
 
@@ -43,17 +43,18 @@ public class ExportReports {
         Map<String, Triple3<Integer, Integer, Integer>> cateMap = new HashMap<>();
         // tripe3 起始行号、截止行号、优先级
         int lu = 1;
-        cateMap.put("档口", new Triple3<>(25, 29, 2));
-        cateMap.put("晚餐小炒", new Triple3<>(30, 34, 3));
-        cateMap.put("卤味打包", new Triple3<>(35, 37, lu));
-        cateMap.put("现包主食", new Triple3<>(38, 38, 4));
+        cateMap.put("档口", new Triple3<>(28, 32, 2));
+        cateMap.put("晚餐小炒", new Triple3<>(33, 37, 3));
+        cateMap.put("卤味打包", new Triple3<>(38, 40, lu));
+        cateMap.put("现包主食", new Triple3<>(41, 42, 4));
 
         // 导入配置
         ImportSetting importSettingOfDinner = new ImportSetting();
         importSettingOfDinner.sheetName = sheetName;
-        importSettingOfDinner.dayAtRow = 23;                // 日期所在行号
-        importSettingOfDinner.menuStartRow = 25;            // 菜单开始行号
-        importSettingOfDinner.menuEndRow = 38;             // 菜单结束行号
+        importSettingOfDinner.dayStartAt = dayStartAt;       // 起始菜单日期
+        importSettingOfDinner.dayAtRow = 26;                // 日期所在行号
+        importSettingOfDinner.menuStartRow = 28;            // 菜单开始行号
+        importSettingOfDinner.menuEndRow = 42;             // 菜单结束行号
         importSettingOfDinner.dayStartCell = 'B';          // 日期起始列名
         importSettingOfDinner.dayEndCell = 'K';            // 日期截止列名
 
